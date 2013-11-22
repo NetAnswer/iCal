@@ -25,6 +25,9 @@ class Event extends Component
 
     const TIME_TRANSPARENCY_OPAQUE = 'OPAQUE';
     const TIME_TRANSPARENCY_TRANSPARENT = 'TRANSPARENT';
+    const CLASS_PRIVATE = 'PRIVATE';
+    const CLASS_PUBLIC = 'PUBLIC';
+    const CLASS_CONFIDENTIAL = 'CONFIDENTIAL';
     const STATUS_TENTATIVE = 'TENTATIVE';
     const STATUS_CONFIRMED = 'CONFIRMED';
     const STATUS_CANCELLED = 'CANCELLED';
@@ -107,7 +110,22 @@ class Event extends Component
     /**
      * @var string
      */
+    protected $categories;
+
+    /**
+     * @var string
+     */
     protected $description;
+
+    /**
+     * @var string
+     */
+    protected $priority;
+
+    /**
+     * @var string
+     */
+    protected $class;
 
     /**
      * @var string
@@ -160,6 +178,14 @@ class Event extends Component
         $this->properties->set('SEQUENCE', $this->sequence);
         $this->properties->set('TRANSP', $this->transparency);
 
+        if ($this->priority) {
+            $this->properties->set('PRIORITY', $this->priority);
+        }
+
+        if ($this->class) {
+            $this->properties->set('CLASS', $this->class);
+        }
+
         if ($this->status) {
             $this->properties->set('STATUS', $this->status);
         }
@@ -190,6 +216,10 @@ class Event extends Component
 
         if (null != $this->attendee) {
             $this->properties->set('ATTENDEE', $this->attendee);
+        }
+
+        if (null != $this->categories) {
+            $this->properties->set('CATEGORIES', implode(', ', $this->categories));
         }
 
         if (null != $this->description) {
@@ -321,7 +351,7 @@ class Event extends Component
     }
 
     /**
-     * @param string $description
+     * @param string $organizer
      */
     public function setOrganizer($organizer)
     {
@@ -337,7 +367,7 @@ class Event extends Component
     }
 
     /**
-     * @param string $description
+     * @param string $attendeee
      */
     public function setAttendee($attendee)
     {
@@ -350,6 +380,22 @@ class Event extends Component
     public function getAttendee()
     {
         return $this->attendee;
+    }
+
+    /**
+     * @param array $categories
+     */
+    public function setCategories($categories)
+    {
+        $this->categories = $categories;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategories()
+    {
+        return $this->categories;
     }
 
     /**
@@ -381,6 +427,29 @@ class Event extends Component
             $this->transparency = $transparency;
         } else {
             throw new InvalidArgumentException('Invalid value for transparancy');
+        }
+    }
+
+    /**
+     * @param string $priority
+     */
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
+    }
+
+    /**
+     * @param string $class
+     */
+    public function setClass($class)
+    {
+        $class = strtoupper($class);
+        if ($class == self::CLASS_PUBLIC ||
+            $class == self::CLASS_PRIVATE ||
+            $class == self::CLASS_CONFIDENTIAL) {
+            $this->class = $class;
+        } else {
+            throw new InvalidArgumentException('Invalid value for class');
         }
     }
 
