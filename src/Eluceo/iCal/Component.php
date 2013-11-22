@@ -30,6 +30,14 @@ abstract class Component
      */
     protected $components = array();
 
+
+
+    /**
+     * @var boolean
+     */
+    protected static $fold = true;
+
+
     /**
      * The type of the concrete Component
      *
@@ -37,6 +45,15 @@ abstract class Component
      * @return string
      */
     abstract public function getType();
+
+
+    /**
+     * @param boolean $fold
+     */
+    public static function setFold($fold)
+    {
+        self::$fold = $fold;
+    }
 
     /**
      * Adds a Component
@@ -80,8 +97,10 @@ abstract class Component
 
         $lines[] = sprintf('END:%s', $this->getType());
 
-        foreach ($lines as $key => $line) {
-            $lines[$key] = $this->fold($line);
+        if (self::$fold) {
+            foreach ($lines as $key => $line) {
+                $lines[$key] = $this->fold($line);
+            }
         }
 
         return $lines;
